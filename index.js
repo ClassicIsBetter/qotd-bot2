@@ -701,6 +701,23 @@ const commands = [
   //slahcommandpoint
 
   new SlashCommandBuilder()
+  .setName("countdown")
+  .setDescription("Creates a countdown using Discord timestamps")
+  .addStringOption(option =>
+    option
+      .setName("until")
+      .setDescription("Date (DD/MM/YYYY or DD/MM/YYYY HH:MM)")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("title")
+      .setDescription("Optional title")
+      .setRequired(false)
+  )
+  .toJSON(),
+
+  new SlashCommandBuilder()
   .setName("translate")
   .setDescription("Translate text")
   .addStringOption(option =>
@@ -2395,6 +2412,72 @@ if (
     });
 
   }
+
+}
+
+// countdown
+if (interaction.commandName === "countdown") {
+
+    const input =
+        interaction.options.getString("until");
+
+    const title =
+        interaction.options.getString("title") || "Countdown";
+
+    // Match:
+    // DD/MM/YYYY
+    // DD/MM/YYYY HH:MM
+    const match = input.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?$/
+    );
+
+    if (!match) {
+
+        return interaction.reply({
+            content: "❌ Invalid format.\nUse `DD/MM/YYYY` or `DD/MM/YYYY HH:MM`",
+            ephemeral: true
+        });
+
+    }
+
+    const day = Number(match[1]);
+    const month = Number(match[2]) - 1;
+    const year = Number(match[3]);
+    const hour = Number(match[4] || 0);
+    const minute = Number(match[5] || 0);
+
+    const date = new Date(year, month, day, hour, minute);
+
+    if (isNaN(date.getTime())) {
+
+        return interaction.reply({
+            content: "❌ Invalid date.",
+            ephemeral: true
+        });
+
+    }
+
+    const unix =
+        Math.floor(date.getTime() / 1000);
+
+    return interaction.reply({
+
+        embeds: [
+
+            new EmbedBuilder()
+                .setTitle(`⏳ ${title}`)
+                .setDescription(
+`📅 **Date**
+<t:${unix}:F>
+
+⏳ **Time Remaining**
+<t:${unix}:R>`
+                )
+                .setColor(0x00b0f4)
+
+        ]
+
+    });
 
 }
 
