@@ -708,42 +708,39 @@ const commands = [
             .setName("area")
             .setDescription("Choose a city")
             .setRequired(true)
-            .addChoices(
-                { name: "🇦🇺 Sydney", value: "Australia/Sydney" },
-                { name: "🇦🇺 Melbourne", value: "Australia/Melbourne" },
-                { name: "🇦🇺 Brisbane", value: "Australia/Brisbane" },
-                { name: "🇦🇺 Adelaide", value: "Australia/Adelaide" },
-                { name: "🇦🇺 Perth", value: "Australia/Perth" },
+.addChoices(
+    { name: "🇦🇺 Sydney", value: "Australia/Sydney" },
+    { name: "🇦🇺 Melbourne", value: "Australia/Melbourne" },
+    { name: "🇦🇺 Brisbane", value: "Australia/Brisbane" },
+    { name: "🇦🇺 Adelaide", value: "Australia/Adelaide" },
+    { name: "🇦🇺 Perth", value: "Australia/Perth" },
 
-                { name: "🇯🇵 Tokyo", value: "Asia/Tokyo" },
-                { name: "🇰🇷 Seoul", value: "Asia/Seoul" },
-                { name: "🇨🇳 Beijing", value: "Asia/Shanghai" },
-                { name: "🇭🇰 Hong Kong", value: "Asia/Hong_Kong" },
-                { name: "🇸🇬 Singapore", value: "Asia/Singapore" },
-                { name: "🇹🇭 Bangkok", value: "Asia/Bangkok" },
-                { name: "🇮🇳 Mumbai", value: "Asia/Kolkata" },
-                { name: "🇦🇪 Dubai", value: "Asia/Dubai" },
+    { name: "🇯🇵 Tokyo", value: "Asia/Tokyo" },
+    { name: "🇰🇷 Seoul", value: "Asia/Seoul" },
+    { name: "🇨🇳 Beijing", value: "Asia/Shanghai" },
+    { name: "🇭🇰 Hong Kong", value: "Asia/Hong_Kong" },
+    { name: "🇸🇬 Singapore", value: "Asia/Singapore" },
+    { name: "🇹🇭 Bangkok", value: "Asia/Bangkok" },
+    { name: "🇮🇳 Mumbai", value: "Asia/Kolkata" },
 
-                { name: "🇬🇧 London", value: "Europe/London" },
-                { name: "🇫🇷 Paris", value: "Europe/Paris" },
-                { name: "🇩🇪 Berlin", value: "Europe/Berlin" },
-                { name: "🇮🇹 Rome", value: "Europe/Rome" },
-                { name: "🇪🇸 Madrid", value: "Europe/Madrid" },
-                { name: "🇳🇱 Amsterdam", value: "Europe/Amsterdam" },
-                { name: "🇷🇺 Moscow", value: "Europe/Moscow" },
+    { name: "🇬🇧 London", value: "Europe/London" },
+    { name: "🇫🇷 Paris", value: "Europe/Paris" },
+    { name: "🇩🇪 Berlin", value: "Europe/Berlin" },
+    { name: "🇮🇹 Rome", value: "Europe/Rome" },
+    { name: "🇪🇸 Madrid", value: "Europe/Madrid" },
 
-                { name: "🇺🇸 New York", value: "America/New_York" },
-                { name: "🇺🇸 Chicago", value: "America/Chicago" },
-                { name: "🇺🇸 Denver", value: "America/Denver" },
-                { name: "🇺🇸 Los Angeles", value: "America/Los_Angeles" },
-                { name: "🇨🇦 Toronto", value: "America/Toronto" },
-                { name: "🇲🇽 Mexico City", value: "America/Mexico_City" },
+    { name: "🇺🇸 New York", value: "America/New_York" },
+    { name: "🇺🇸 Chicago", value: "America/Chicago" },
+    { name: "🇺🇸 Los Angeles", value: "America/Los_Angeles" },
+    { name: "🇨🇦 Toronto", value: "America/Toronto" },
 
-                { name: "🇧🇷 São Paulo", value: "America/Sao_Paulo" },
+    { name: "🇧🇷 São Paulo", value: "America/Sao_Paulo" },
 
-                { name: "🇿🇦 Johannesburg", value: "Africa/Johannesburg" },
+    { name: "🇿🇦 Johannesburg", value: "Africa/Johannesburg" },
 
-                { name: "🇳🇿 Auckland", value: "Pacific/Auckland" }
+    { name: "🇳🇿 Auckland", value: "Pacific/Auckland" },
+
+    { name: "🇦🇪 Dubai", value: "Asia/Dubai" }
             )
     )
     .toJSON(),
