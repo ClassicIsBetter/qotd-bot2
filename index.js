@@ -701,6 +701,54 @@ const commands = [
   //slahcommandpoint
 
   new SlashCommandBuilder()
+    .setName("time")
+    .setDescription("Shows the current time in a city")
+    .addStringOption(option =>
+        option
+            .setName("area")
+            .setDescription("Choose a city")
+            .setRequired(true)
+            .addChoices(
+                { name: "🇦🇺 Sydney", value: "Australia/Sydney" },
+                { name: "🇦🇺 Melbourne", value: "Australia/Melbourne" },
+                { name: "🇦🇺 Brisbane", value: "Australia/Brisbane" },
+                { name: "🇦🇺 Adelaide", value: "Australia/Adelaide" },
+                { name: "🇦🇺 Perth", value: "Australia/Perth" },
+
+                { name: "🇯🇵 Tokyo", value: "Asia/Tokyo" },
+                { name: "🇰🇷 Seoul", value: "Asia/Seoul" },
+                { name: "🇨🇳 Beijing", value: "Asia/Shanghai" },
+                { name: "🇭🇰 Hong Kong", value: "Asia/Hong_Kong" },
+                { name: "🇸🇬 Singapore", value: "Asia/Singapore" },
+                { name: "🇹🇭 Bangkok", value: "Asia/Bangkok" },
+                { name: "🇮🇳 Mumbai", value: "Asia/Kolkata" },
+                { name: "🇦🇪 Dubai", value: "Asia/Dubai" },
+
+                { name: "🇬🇧 London", value: "Europe/London" },
+                { name: "🇫🇷 Paris", value: "Europe/Paris" },
+                { name: "🇩🇪 Berlin", value: "Europe/Berlin" },
+                { name: "🇮🇹 Rome", value: "Europe/Rome" },
+                { name: "🇪🇸 Madrid", value: "Europe/Madrid" },
+                { name: "🇳🇱 Amsterdam", value: "Europe/Amsterdam" },
+                { name: "🇷🇺 Moscow", value: "Europe/Moscow" },
+
+                { name: "🇺🇸 New York", value: "America/New_York" },
+                { name: "🇺🇸 Chicago", value: "America/Chicago" },
+                { name: "🇺🇸 Denver", value: "America/Denver" },
+                { name: "🇺🇸 Los Angeles", value: "America/Los_Angeles" },
+                { name: "🇨🇦 Toronto", value: "America/Toronto" },
+                { name: "🇲🇽 Mexico City", value: "America/Mexico_City" },
+
+                { name: "🇧🇷 São Paulo", value: "America/Sao_Paulo" },
+
+                { name: "🇿🇦 Johannesburg", value: "Africa/Johannesburg" },
+
+                { name: "🇳🇿 Auckland", value: "Pacific/Auckland" }
+            )
+    )
+    .toJSON(),
+
+  new SlashCommandBuilder()
   .setName("countdown")
   .setDescription("Creates a countdown using Discord timestamps")
   .addStringOption(option =>
@@ -2524,6 +2572,40 @@ if (
 }
 
 //interactionmarker
+
+// time
+if (interaction.commandName === "time") {
+
+    const zone =
+        interaction.options.getString("area");
+
+    const city =
+        zone.split("/")[1].replace(/_/g, " ");
+
+    const now = new Date();
+
+    const time = now.toLocaleString("en-AU", {
+        timeZone: zone,
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+
+    const embed = new EmbedBuilder()
+        .setTitle(`🕒 Time in ${city}`)
+        .setDescription(`**${time}**`)
+        .setColor(0x00b0f4);
+
+    return interaction.reply({
+        embeds: [embed]
+    });
+
+}
 
 // translate
 if (
