@@ -701,6 +701,65 @@ const commands = [
   //slahcommandpoint
 
   new SlashCommandBuilder()
+    .setName("embed")
+    .setDescription("Create a custom embed")
+    .addStringOption(option =>
+        option
+            .setName("title")
+            .setDescription("Embed title")
+            .setRequired(true)
+    )
+    .addStringOption(option =>
+        option
+            .setName("text")
+            .setDescription("Embed description")
+            .setRequired(true)
+    )
+    .addStringOption(option =>
+        option
+            .setName("colour")
+            .setDescription("Embed colour")
+            .setRequired(false)
+            .addChoices(
+                { name: "🔴 Red", value: "FF0000" },
+                { name: "🟠 Orange", value: "FFA500" },
+                { name: "🟡 Yellow", value: "FFFF00" },
+                { name: "🟢 Green", value: "00FF00" },
+                { name: "🔵 Blue", value: "0099FF" },
+                { name: "🟣 Purple", value: "8000FF" },
+                { name: "🟣 Pink", value: "FF69B4" },
+                { name: "⚫ Black", value: "000000" },
+                { name: "⚪ White", value: "FFFFFF" },
+                { name: "🌈 Random", value: "RANDOM" }
+            )
+    )
+    .addStringOption(option =>
+        option
+            .setName("footer")
+            .setDescription("Footer text")
+            .setRequired(false)
+    )
+    .addStringOption(option =>
+        option
+            .setName("image")
+            .setDescription("Image URL")
+            .setRequired(false)
+    )
+    .addStringOption(option =>
+        option
+            .setName("thumbnail")
+            .setDescription("Thumbnail URL")
+            .setRequired(false)
+    )
+    .addBooleanOption(option =>
+        option
+            .setName("timestamp")
+            .setDescription("Show the current timestamp")
+            .setRequired(false)
+    )
+    .toJSON(),
+
+  new SlashCommandBuilder()
     .setName("time")
     .setDescription("Shows the current time in a city")
     .addStringOption(option =>
@@ -2457,6 +2516,49 @@ if (
     });
 
   }
+
+}
+
+// embed
+if (interaction.commandName === "embed") {
+
+    const title = interaction.options.getString("title");
+    const text = interaction.options.getString("text");
+    const footer = interaction.options.getString("footer");
+    const image = interaction.options.getString("image");
+    const thumbnail = interaction.options.getString("thumbnail");
+    const timestamp = interaction.options.getBoolean("timestamp") || false;
+
+    let colour = interaction.options.getString("colour") || "0099FF";
+
+    if (colour === "RANDOM") {
+        colour = Math.floor(Math.random() * 16777215);
+    } else {
+        colour = parseInt(colour, 16);
+    }
+
+    const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(text)
+        .setColor(colour);
+
+    if (footer)
+        embed.setFooter({
+            text: footer
+        });
+
+    if (image)
+        embed.setImage(image);
+
+    if (thumbnail)
+        embed.setThumbnail(thumbnail);
+
+    if (timestamp)
+        embed.setTimestamp();
+
+    return interaction.reply({
+        embeds: [embed]
+    });
 
 }
 
