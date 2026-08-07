@@ -4,6 +4,13 @@ module.exports = (client) => {
       // Commands and interactions will be moved here
       // from old/bot.js one section at a time.
 
+      if (interaction.isChatInputCommand()) {
+  if (interaction.commandName === "ping") {
+    await interaction.reply("Pong!");
+    return;
+  }
+}
+
       console.log(
         `Interaction received: ${interaction.type}`
       );
