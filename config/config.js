@@ -1,4 +1,4 @@
-```js
+js
 module.exports = {
 
   TOKEN: process.env.TOKEN,
@@ -33,4 +33,4 @@ module.exports = {
   QOTD_ROLE_ID:
     "1479019281126785096"
 };
-```
+
