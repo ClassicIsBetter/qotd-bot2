@@ -1,4 +1,4 @@
-```js
+js
 require("dotenv").config();
 
 const { Client, GatewayIntentBits } = require("discord.js");
@@ -30,4 +30,4 @@ require("./events/interactionCreate")(client);
 // =====================
 
 client.login(config.TOKEN);
-```
+
