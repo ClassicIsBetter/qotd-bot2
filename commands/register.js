@@ -1,4 +1,4 @@
-```js
+
 const { REST, Routes } = require("discord.js");
 const config = require("../config/config");
 const commands = require("./definitions");
@@ -33,4 +33,4 @@ async function registerCommands() {
 }
 
 module.exports = registerCommands;
-```
+
