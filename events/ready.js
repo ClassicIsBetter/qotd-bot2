@@ -1,4 +1,4 @@
-```js
+js
 const config = require("../config/config");
 
 module.exports = (client) => {
@@ -55,4 +55,4 @@ module.exports = (client) => {
   });
 
 };
-```
+
