@@ -1,4 +1,4 @@
-js
+
 const ws = require("ws");
 const { createClient } = require("@supabase/supabase-js");
 
