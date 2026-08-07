@@ -1,9 +1,12 @@
-js
 require("dotenv").config();
 
-const { Client, GatewayIntentBits } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits
+} = require("discord.js");
 
 const config = require("./config/config");
+const registerCommands = require("./commands/register");
 
 // =====================
 // CLIENT
@@ -26,8 +29,13 @@ require("./events/ready")(client);
 require("./events/interactionCreate")(client);
 
 // =====================
+// REGISTER COMMANDS
+// =====================
+
+registerCommands();
+
+// =====================
 // LOGIN
 // =====================
 
 client.login(config.TOKEN);
-
