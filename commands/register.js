@@ -11,20 +11,31 @@ async function registerCommands() {
     .readdirSync(__dirname)
     .filter(file =>
       file.endsWith(".js") &&
-      file !== "register.js"
+      file !== "register.js" &&
+      file !== "definitions.js"
     );
 
+  console.log("Found command files:");
+
   for (const file of commandFiles) {
-    const command = require(path.join(__dirname, file));
-
-    if (!command.data) {
-      console.warn(
-        `⚠️ ${file} does not have command data`
+    try {
+      const command = require(
+        path.join(__dirname, file)
       );
-      continue;
-    }
 
-    commands.push(command.data.toJSON());
+      if (!command.data) {
+        console.warn(`⚠️ ${file} has no "data" property`);
+        continue;
+      }
+
+      commands.push(command.data.toJSON());
+
+      console.log(`  ✅ ${command.data.name} (${file})`);
+
+    } catch (error) {
+      console.error(`❌ Failed to load ${file}:`);
+      console.error(error);
+    }
   }
 
   const rest = new REST({
@@ -43,7 +54,8 @@ async function registerCommands() {
       }
     );
 
-    console.log("Commands ready.");
+    console.log("Commands registered successfully.");
+
   } catch (error) {
     console.error(
       "Failed to register commands:",
