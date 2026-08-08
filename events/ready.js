@@ -3,7 +3,7 @@ const config = require("../config/config");
 
 module.exports = (client) => {
 
-  client.once("ready", () => {
+  client.once("clientReady", () => {
 
     // =====================
     // BOT STATUS
