@@ -48,11 +48,14 @@ async function registerCommands() {
     );
 
     await rest.put(
-      Routes.applicationCommands(config.CLIENT_ID),
-      {
-        body: commands
-      }
-    );
+  Routes.applicationGuildCommands(
+    config.CLIENT_ID,
+    config.GUILD_ID
+  ),
+  {
+    body: commands
+  }
+);
 
     console.log("Commands registered successfully.");
 
