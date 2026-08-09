@@ -1088,12 +1088,10 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 // EXTRACT EMOJIS
 // =====================
 function extractEmojis(lines) {
-
   return lines
-    .filter(line => line.includes("|"))
-    .map(line =>
-      line.split("|")[0].trim()
-    );
+    .filter(line => line.includes(","))
+    .map(line => line.split(",")[0].trim())
+    .filter(Boolean);
 }
 
 
@@ -1346,7 +1344,6 @@ function snakeButtons() {
 // POST QOTD
 // =====================
 async function postQOTD(content) {
-
   const outputChannel =
     await client.channels.fetch(
       OUTPUT_CHANNEL_ID
@@ -1357,6 +1354,25 @@ async function postQOTD(content) {
     await getQotdNumber(
       outputChannel.guild.id
     );
+
+  // Check for a custom thread name
+  let threadName = `QOTD #${qotdNumber} discussion`;
+
+  const threadMarker =
+    "__QOTD_THREAD_NAME__:";
+
+  if (content.includes(threadMarker)) {
+    const parts = content.split(threadMarker);
+
+    content = parts[0].trim();
+
+    const customName =
+      parts[1]?.trim();
+
+    if (customName) {
+      threadName = customName.slice(0, 100);
+    }
+  }
 
   const lines = content
     .split("\n")
@@ -1378,15 +1394,13 @@ async function postQOTD(content) {
 
   // reactions
   for (const reaction of reactions) {
-
     await sent.react(reaction)
       .catch(() => {});
   }
 
   // thread
   await sent.startThread({
-    name:
-      `QOTD #${qotdNumber} discussion`,
+    name: threadName,
     autoArchiveDuration: 1440
   }).catch(() => {});
 
@@ -1673,89 +1687,159 @@ client.on(
     // =====================
     if (interaction.isModalSubmit()) {
 
-      if (
-        interaction.customId ===
-        'qotdModal'
-      ) {
+if (
+  interaction.customId ===
+  'qotdModal'
+) {
 
-        const question =
-          interaction.fields.getTextInputValue(
-            'question'
-          );
+  const question =
+    interaction.fields.getTextInputValue(
+      'question'
+    ).trim();
 
-        const answers =
-          interaction.fields.getTextInputValue(
-            'answers'
-          );
+  const responses =
+    interaction.fields.getTextInputValue(
+      'responses'
+    ).trim();
 
-        const reviewChannel =
-          await client.channels.fetch(
-            REVIEW_CHANNEL_ID
-          );
+  const threadName =
+    interaction.fields.getTextInputValue(
+      'threadName'
+    ).trim();
 
-        const qotdContent =
-`"${question}" suggested by <@${interaction.user.id}>
-${answers}`;
+  // Convert:
+  // 🍕, Pizza
+  // 🍔, Burger
+  //
+  // into:
+  // 🍕 | Pizza
+  // 🍔 | Burger
+  //
+  // This keeps the rest of the QOTD system compatible.
+  let formattedResponses = "";
 
-        const embed =
-          new EmbedBuilder()
-            .setTitle(
-              "New QOTD Suggestion"
-            )
-            .setDescription(
-              qotdContent
-            )
-            .setColor(0xffff00)
-            .setFooter({
-              text:
-                "Status: Pending"
-            });
+  if (responses) {
+    formattedResponses =
+      responses
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const commaIndex =
+            line.indexOf(",");
 
-        const buttons =
-          new ActionRowBuilder()
-            .addComponents(
+          if (commaIndex === -1) {
+            return line;
+          }
 
-              new ButtonBuilder()
-                .setCustomId(
-                  "accept_qotd"
-                )
-                .setLabel(
-                  "Accept"
-                )
-                .setStyle(
-                  ButtonStyle.Success
-                ),
+          const emoji =
+            line.slice(
+              0,
+              commaIndex
+            ).trim();
 
-              new ButtonBuilder()
-                .setCustomId(
-                  "decline_qotd"
-                )
-                .setLabel(
-                  "Decline"
-                )
-                .setStyle(
-                  ButtonStyle.Danger
-                )
-            );
+          const text =
+            line.slice(
+              commaIndex + 1
+            ).trim();
 
-        const reviewMessage =
-          await reviewChannel.send({
-            embeds: [embed],
-            components: [buttons]
-          });
+          if (!emoji && !text) {
+            return "";
+          }
 
-        await reviewMessage.startThread({
-          name:
-            `Review: ${question.slice(0, 50)}`,
-          autoArchiveDuration: 1440
-        }).catch(() => {});
+          if (!emoji) {
+            return text;
+          }
 
-        return interaction.reply({
-          content:
-            "Your QOTD was submitted for review.",
-          ephemeral: true
-        });
-      }
+          if (!text) {
+            return emoji;
+          }
+
+          return `${emoji} | ${text}`;
+        })
+        .filter(Boolean)
+        .join("\n");
+  }
+
+  let qotdContent =
+    `"${question}" suggested by <@${interaction.user.id}>`;
+
+  if (formattedResponses) {
+    qotdContent +=
+      `\n${formattedResponses}`;
+  }
+
+  // Store the custom thread name so it survives
+  // until the QOTD is actually posted.
+  if (threadName) {
+    qotdContent +=
+      `\n\n__QOTD_THREAD_NAME__:${threadName}`;
+  }
+
+  const reviewChannel =
+    await client.channels.fetch(
+      REVIEW_CHANNEL_ID
+    );
+
+  const embed =
+    new EmbedBuilder()
+      .setTitle(
+        "New QOTD Suggestion"
+      )
+      .setDescription(
+        qotdContent
+      )
+      .setColor(0xffff00)
+      .setFooter({
+        text:
+          "Status: Pending"
+      });
+
+  const buttons =
+    new ActionRowBuilder()
+      .addComponents(
+
+        new ButtonBuilder()
+          .setCustomId(
+            "accept_qotd"
+          )
+          .setLabel(
+            "Accept"
+          )
+          .setStyle(
+            ButtonStyle.Success
+          ),
+
+        new ButtonBuilder()
+          .setCustomId(
+            "decline_qotd"
+          )
+          .setLabel(
+            "Decline"
+          )
+          .setStyle(
+            ButtonStyle.Danger
+          )
+      );
+
+  const reviewMessage =
+    await reviewChannel.send({
+      embeds: [embed],
+      components: [buttons]
+    });
+
+  await reviewMessage.startThread({
+    name:
+      `Review: ${question.slice(0, 50)}`,
+    autoArchiveDuration: 1440
+  }).catch(() => {});
+
+  return interaction.reply({
+    content:
+      "Your QOTD was submitted for review.",
+    ephemeral: true
+  });
+}
 
       return;
     }
@@ -2266,67 +2350,93 @@ if (
     }
 
     // suggestqotd
-    if (
-      interaction.commandName ===
-      'suggestqotd'
-    ) {
+    // suggestqotd
+if (
+  interaction.commandName ===
+  'suggestqotd'
+) {
 
-      const modal =
-        new ModalBuilder()
-          .setCustomId(
-            'qotdModal'
-          )
-          .setTitle(
-            'Suggest a QOTD'
-          );
-
-      const question =
-        new TextInputBuilder()
-          .setCustomId(
-            'question'
-          )
-          .setLabel(
-            'Question'
-          )
-          .setStyle(
-            TextInputStyle.Paragraph
-          );
-
-      const answers =
-        new TextInputBuilder()
-          .setCustomId(
-            'answers'
-          )
-          .setLabel(
-            'Answers (one per line: emoji | text)'
-          )
-          .setPlaceholder(
-`🍕 | Pizza
-🍔 | Burger
-🌮 | Taco`
-          )
-          .setStyle(
-            TextInputStyle.Paragraph
-          );
-
-      modal.addComponents(
-
-        new ActionRowBuilder()
-          .addComponents(
-            question
-          ),
-
-        new ActionRowBuilder()
-          .addComponents(
-            answers
-          )
+  const modal =
+    new ModalBuilder()
+      .setCustomId(
+        'qotdModal'
+      )
+      .setTitle(
+        'Suggest a QOTD'
       );
 
-      return interaction.showModal(
-        modal
-      );
-    }
+  const question =
+    new TextInputBuilder()
+      .setCustomId(
+        'question'
+      )
+      .setLabel(
+        'Question'
+      )
+      .setPlaceholder(
+        'What is your favourite food?'
+      )
+      .setStyle(
+        TextInputStyle.Paragraph
+      )
+      .setRequired(true);
 
+  const responses =
+    new TextInputBuilder()
+      .setCustomId(
+        'responses'
+      )
+      .setLabel(
+        'Responses (optional)'
+      )
+      .setPlaceholder(
+        `🍕, Pizza
+🍔, Burger
+🌮, Tacos`
+      )
+      .setStyle(
+        TextInputStyle.Paragraph
+      )
+      .setRequired(false);
+
+  const threadName =
+    new TextInputBuilder()
+      .setCustomId(
+        'threadName'
+      )
+      .setLabel(
+        'Thread name (optional)'
+      )
+      .setPlaceholder(
+        'Leave blank for the default name'
+      )
+      .setStyle(
+        TextInputStyle.Short
+      )
+      .setRequired(false);
+
+  modal.addComponents(
+
+    new ActionRowBuilder()
+      .addComponents(
+        question
+      ),
+
+    new ActionRowBuilder()
+      .addComponents(
+        responses
+      ),
+
+    new ActionRowBuilder()
+      .addComponents(
+        threadName
+      )
+  );
+
+  return interaction.showModal(
+    modal
+  );
+}
   
 
 
