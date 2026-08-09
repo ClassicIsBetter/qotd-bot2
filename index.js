@@ -270,7 +270,7 @@ const client = new Client({
 
 //status
 //status & server list on startup
-client.once('ready', () => {
+client.once('clientReady', () => {
     // 1. Set bot activity status
     client.user.setPresence({
         activities: [
