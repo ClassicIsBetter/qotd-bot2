@@ -1755,7 +1755,7 @@ if (
             return emoji;
           }
 
-          return `${emoji} | ${text}`;
+          return `${emoji}, ${text}`;
         })
         .filter(Boolean)
         .join("\n");
